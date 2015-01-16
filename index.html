@@ -9,11 +9,16 @@
         padding: 0;
         background: #000;
     }
+    canvas {
+        width: 100%;
+        height: 100%
+    }
     </style>
 </head>
 <body>
 <canvas id="canvas" width="1000" height="1000"></canvas>
 <script src="bower_components/delaunay-fast/delaunay.js"></script>
+<script src="bower_components/threejs/build/three.min.js"></script>
 <script>
 window.onload = function () {
     var canvas = document.getElementById("canvas"),
@@ -64,7 +69,7 @@ window.onload = function () {
         vertex.z = 10 * Math.random();
         //vertex.z = 0;
         vertex.triangles = [];
-    });  
+    });
 
     var triangles = Delaunay.triangulate(vertices.map(function (vertex) {
         return [ vertex.x, vertex.y ];
@@ -147,7 +152,7 @@ window.onload = function () {
         ctx.lineTo(triangle.b.x, triangle.b.y);
         ctx.lineTo(triangle.c.x, triangle.c.y);
         ctx.closePath();
-        ctx.stroke();    
+        ctx.stroke();
         ctx.fill();
     }
 
@@ -163,7 +168,7 @@ window.onload = function () {
 
     triangles.forEach(renderTriangle);
 
-    tick();  
+    tick();
 };
 </script>
 </body>
