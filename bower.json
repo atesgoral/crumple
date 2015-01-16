@@ -1,0 +1,12 @@
+{
+  "name": "crumple",
+  "version": "0.0.0",
+  "authors": [
+    "Ates Goral <ates@magnetiq.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "delaunay-fast": "*"
+  }
+}
