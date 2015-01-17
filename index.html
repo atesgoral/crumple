@@ -8,6 +8,7 @@
         margin: 0;
         padding: 0;
         background: #000;
+        overflow: hidden;
     }
     canvas {
         width: 100%;
@@ -58,7 +59,7 @@ window.onload = function () {
     geometry.vertices.forEach(function (vertex) {
         vertex.x -= 0.5;
         vertex.y -= 0.5;
-        vertex.z = 0.1 * Math.random();
+        vertex.z = 0.01 * Math.random();
     });
 
     Delaunay.triangulate(geometry.vertices.map(function (vertex) {
@@ -75,46 +76,25 @@ window.onload = function () {
         }
     });
 
-    geometry.computeBoundingSphere();
+    //geometry.computeBoundingBox();
+    geometry.computeFaceNormals();
 
-    var material = new THREE.MeshBasicMaterial({ color: 0x2d3741 }),
-    // var material = new THREE.MeshLambertMaterial({ color: 0x2d3741 }),
-    // var material = new THREE.MeshNormalMaterial(),
+    // var material = new THREE.MeshBasicMaterial({ color: 0x2d3741 }),
+    var material = new THREE.MeshNormalMaterial(),
         crumple = new THREE.Mesh(geometry, material);
 
     scene.add(crumple);
 
     // var ambient = new THREE.AmbientLight(0x404040);
-    //scene.add(ambient);
+    // scene.add(ambient);
 
-    camera.position.z = 2;
-
-    var vertex,
-        run,
-        color = [ 48, 55, 65 ],
-        ambient = 0.2;
-
-    function process() {
-        // if (!run || !vertex) {
-        //     vertex = vertices[Math.floor(vertices.length * Math.random())];
-        //     run = 50;
-        // }
-
-        // vertex.z += 1;
-        // run--;
-    }
+    camera.position.z = 1;
 
     function render() {
         renderer.render(scene, camera);
     }
 
-    function tick() {
-        process();
-        render();
-        //window.setTimeout(tick, 16);
-    }
-
-    tick();
+    render();
 };
 </script>
 </body>
