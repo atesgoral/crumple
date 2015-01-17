@@ -16,107 +16,78 @@
     </style>
 </head>
 <body>
-<canvas id="canvas" width="1000" height="1000"></canvas>
 <script src="bower_components/delaunay-fast/delaunay.js"></script>
 <script src="bower_components/threejs/build/three.min.js"></script>
 <script>
 window.onload = function () {
-    var canvas = document.getElementById("canvas"),
-        ctx = canvas.getContext("2d"),
-        sw = canvas.width,
-        sh = canvas.height;
+    var sw = window.innerWidth,
+        sh = window.innerHeight,
+        scene = new THREE.Scene(),
+        camera = new THREE.PerspectiveCamera(75, sw / sh, 0.1, 1000),
+        renderer = new THREE.WebGLRenderer();
 
-    var vertices = [],
+    renderer.setSize(sw, sh);
+
+    document.body.appendChild(renderer.domElement);
+
+    var geometry = new THREE.Geometry(),
         density = 15;
 
-    vertices.push({
-        x: 0, y: 0
-    }, {
-        x: sw, y: 0
-    }, {
-        x: sw, y: sh
-    }, {
-        x: 0, y: sh
-    });
+    geometry.vertices.push(
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(1, 0, 0),
+        new THREE.Vector3(1, 1, 0),
+        new THREE.Vector3(0, 1, 0)
+    );
 
     for (var i = 0; i < density; i++) {
-        vertices.push({
-            x: sw * Math.random(),
-            y: 0
-        });
-        vertices.push({
-            x: 0,
-            y: sh * Math.random()
-        });
-        vertices.push({
-            x: sw * Math.random(),
-            y: sh
-        });
-        vertices.push({
-            x: sw,
-            y: sh * Math.random()
-        });
+        geometry.vertices.push(
+            new THREE.Vector3(Math.random(), 0, 0),
+            new THREE.Vector3(0, Math.random(), 0),
+            new THREE.Vector3(Math.random(), 1, 0),
+            new THREE.Vector3(1, Math.random(), 0)
+        );
     }
 
     for (var i = 0; i < density * density; i++) {
-        vertices.push({
-            x: sw * Math.random(),
-            y: sh * Math.random()
-        });
+        geometry.vertices.push(
+            new THREE.Vector3(Math.random(), Math.random(), 0)
+        );
     }
 
-    vertices.forEach(function (vertex) {
-        vertex.z = 10 * Math.random();
-        //vertex.z = 0;
-        vertex.triangles = [];
+    geometry.vertices.forEach(function (vertex) {
+        vertex.x -= 0.5;
+        vertex.y -= 0.5;
+        vertex.z = 0.1 * Math.random();
     });
 
-    var triangles = Delaunay.triangulate(vertices.map(function (vertex) {
+    Delaunay.triangulate(geometry.vertices.map(function (vertex) {
         return [ vertex.x, vertex.y ];
-    })).reduce(function (triangles, _, index, vertexIndices) {
-        if (index % 3 === 2) {
-            triangles.push({
-                a: vertices[vertexIndices[index - 2]],
-                b: vertices[vertexIndices[index - 1]],
-                c: vertices[vertexIndices[index]]
-            });
+    })).forEach(function (vertexIndex, indexIndex, vertexIndices) {
+        if (indexIndex % 3 === 2) {
+            geometry.faces.push(
+                new THREE.Face3(
+                    vertexIndices[indexIndex],
+                    vertexIndices[indexIndex - 1],
+                    vertexIndices[indexIndex - 2]
+                )
+            );
         }
-        return triangles;
-    }, []);
-
-    triangles.forEach(function (triangle) {
-        triangle.a.triangles.push(triangle);
-        triangle.b.triangles.push(triangle);
-        triangle.c.triangles.push(triangle);
     });
 
-    function vector(a, b) {
-        return {
-            x: b.x - a.x,
-            y: b.y - a.y,
-            z: b.z - a.z
-        };
-    }
+    geometry.computeBoundingSphere();
 
-    function cross(v, u) {
-        return {
-            x: v.y * u.z - v.z * u.y,
-            y: v.z * u.x - v.x * u.z,
-            z: v.x * u.y - v.y * u.x
-        };
-    }
+    var material = new THREE.MeshBasicMaterial({ color: 0x2d3741 }),
+    // var material = new THREE.MeshLambertMaterial({ color: 0x2d3741 }),
+    // var material = new THREE.MeshNormalMaterial(),
+        crumple = new THREE.Mesh(geometry, material);
 
-    function dot(v, u) {
-        return v.x * u.x + v.y * u.y + v.z * u.z;
-    }
+    scene.add(crumple);
 
-    function mag(v) {
-        return Math.sqrt(dot(v, v));
-    }
+    // var ambient = new THREE.AmbientLight(0x404040);
+    //scene.add(ambient);
 
-    // function angle(v, u) {
-    //     return Math.acos(dot(v, u) / (mag(v) * mag(u)));
-    // }
+    camera.position.z = 2;
 
     var vertex,
         run,
@@ -124,49 +95,24 @@ window.onload = function () {
         ambient = 0.2;
 
     function process() {
-        if (!run || !vertex) {
-            vertex = vertices[Math.floor(vertices.length * Math.random())];
-            run = 50;
-        }
+        // if (!run || !vertex) {
+        //     vertex = vertices[Math.floor(vertices.length * Math.random())];
+        //     run = 50;
+        // }
 
-        vertex.z += 1;
-        run--;
-    }
-
-    function renderTriangle(triangle) {
-        var v = vector(triangle.a, triangle.b),
-            u = vector(triangle.a, triangle.c),
-            N = cross(v, u), // Normal
-            L = { x: 1, y: 1, z: -1 }, // Light
-            //L = vector(origin, { x: 0, y: 0, z: 0 }),
-            cosT = dot(N, L) / (mag(N) * mag(L)),
-            l = Math.min(cosT + ambient, 1); // Lambertian
-
-        var shade = color.map(function (c) {
-            return Math.round(c * l);
-        });
-
-        ctx.fillStyle = ctx.strokeStyle = "rgb(" + shade.join(",") + ")";
-        ctx.beginPath();
-        ctx.moveTo(triangle.a.x, triangle.a.y);
-        ctx.lineTo(triangle.b.x, triangle.b.y);
-        ctx.lineTo(triangle.c.x, triangle.c.y);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.fill();
+        // vertex.z += 1;
+        // run--;
     }
 
     function render() {
-        vertex.triangles.forEach(renderTriangle);
+        renderer.render(scene, camera);
     }
 
     function tick() {
         process();
         render();
-        window.setTimeout(tick, 16);
+        //window.setTimeout(tick, 16);
     }
-
-    triangles.forEach(renderTriangle);
 
     tick();
 };
