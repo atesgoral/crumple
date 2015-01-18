@@ -25,7 +25,11 @@ window.onload = function () {
         sh = window.innerHeight,
         scene = new THREE.Scene(),
         camera = new THREE.PerspectiveCamera(75, sw / sh, 0.1, 1000),
-        renderer = new THREE.WebGLRenderer();
+        // camera = new THREE.OrthographicCamera(sw / -2, sw / 2, sh / 2, sh / -2, 1, 1000),
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+
+    renderer.shadowMapEnabled = true;
+    renderer.shadowMapType = THREE.PCFSoftShadowMap;
 
     renderer.setSize(sw, sh);
 
@@ -59,7 +63,7 @@ window.onload = function () {
     geometry.vertices.forEach(function (vertex) {
         vertex.x -= 0.5;
         vertex.y -= 0.5;
-        vertex.z = 0.01 * Math.random();
+        vertex.z = 0.05 * Math.random();
     });
 
     Delaunay.triangulate(geometry.vertices.map(function (vertex) {
@@ -79,28 +83,33 @@ window.onload = function () {
     //geometry.computeBoundingBox();
     geometry.computeFaceNormals();
 
-    // var material = new THREE.MeshBasicMaterial({ color: 0x2d3741 }),
-    var material = new THREE.MeshLambertMaterial(),
+    var material = new THREE.MeshLambertMaterial({ color: 0x2d3741, ambient: 0x2d3741 }),
         crumple = new THREE.Mesh(geometry, material);
+
+    crumple.castShadow = true;
+    crumple.receiveShadow = true;
 
     scene.add(crumple);
 
-    var ambient = new THREE.AmbientLight(0x404040);
+    // var cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5),new THREE.MeshLambertMaterial());
+    // cube.rotation.x = Math.PI / 3;
+    // cube.rotation.y = Math.PI / 3;
+    // scene.add(cube);
+
+    var ambient = new THREE.AmbientLight(0x2d3741);
     scene.add(ambient);
 
-    // var directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
-    // directionalLight.position.set(-0.5, -0.5, 1);
-    // scene.add(directionalLight);
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
 
-    var areaLight1 = new THREE.AreaLight(0xffffff, 1);
-    areaLight1.position.set(0, 0, 1);
-    areaLight1.lookAt(0, 0, 0);
-    areaLight1.width = 1;
-    areaLight1.height = 1;
+    directionalLight.position.set(0, 1, 1);
+    directionalLight.castShadow = true;
+    directionalLight.shadowDarkness = 0.5;
+    directionalLight.shadowCameraVisible = true;
 
-    scene.add(areaLight1);
+    scene.add(directionalLight);
 
     camera.position.z = 1;
+    //camera.lookAt(0, 0, 0);
 
     function render() {
         renderer.render(scene, camera);
