@@ -80,13 +80,25 @@ window.onload = function () {
     geometry.computeFaceNormals();
 
     // var material = new THREE.MeshBasicMaterial({ color: 0x2d3741 }),
-    var material = new THREE.MeshNormalMaterial(),
+    var material = new THREE.MeshLambertMaterial(),
         crumple = new THREE.Mesh(geometry, material);
 
     scene.add(crumple);
 
-    // var ambient = new THREE.AmbientLight(0x404040);
-    // scene.add(ambient);
+    var ambient = new THREE.AmbientLight(0x404040);
+    scene.add(ambient);
+
+    // var directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    // directionalLight.position.set(-0.5, -0.5, 1);
+    // scene.add(directionalLight);
+
+    var areaLight1 = new THREE.AreaLight(0xffffff, 1);
+    areaLight1.position.set(0, 0, 1);
+    areaLight1.lookAt(0, 0, 0);
+    areaLight1.width = 1;
+    areaLight1.height = 1;
+
+    scene.add(areaLight1);
 
     camera.position.z = 1;
 
