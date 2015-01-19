@@ -63,7 +63,7 @@ window.onload = function () {
     geometry.vertices.forEach(function (vertex) {
         vertex.x -= 0.5;
         vertex.y -= 0.5;
-        vertex.z = 0.05 * Math.random();
+        vertex.z = 0.1 * Math.random();
     });
 
     Delaunay.triangulate(geometry.vertices.map(function (vertex) {
@@ -101,25 +101,39 @@ window.onload = function () {
     directionalLight.target.position.set(0, 0, 0);
 
     directionalLight.castShadow = true;
-    directionalLight.shadowDarkness = 0.5;
-    directionalLight.shadowCameraVisible = true;
+    // directionalLight.shadowDarkness = 0.5;
+    // directionalLight.shadowCameraVisible = true;
 
-    directionalLight.shadowCameraRight = 0.5;
-    directionalLight.shadowCameraLeft = -0.5;
-    directionalLight.shadowCameraTop = 0.5;
-    directionalLight.shadowCameraBottom = -0.5;
-    directionalLight.shadowCameraNear = 1;
-    directionalLight.shadowCameraFar = 10;
+    // directionalLight.shadowCameraRight = 0.5;
+    // directionalLight.shadowCameraLeft = -0.5;
+    // directionalLight.shadowCameraTop = 0.5;
+    // directionalLight.shadowCameraBottom = -0.5;
+    // directionalLight.shadowCameraNear = 1;
+    // directionalLight.shadowCameraFar = 10;
+
+    renderer.shadowMapEnabled = true;
+    renderer.shadowMapSoft = false;
+
+    renderer.shadowCameraNear = 1;
+    renderer.shadowCameraFar = 10;
+    renderer.shadowCameraFov = 50;
+
+    renderer.shadowMapBias = 0.0039;
+    renderer.shadowMapDarkness = 0.5;
+    renderer.shadowMapWidth = 1024;
+    renderer.shadowMapHeight = 1024;
+
+    render.shadowCameraVisible = true;
 
     scene.add(directionalLight);
 
-    scene.add(new THREE.DirectionalLightHelper(directionalLight));
+    //scene.add(new THREE.DirectionalLightHelper(directionalLight));
 
-    var cameraHelper = new THREE.CameraHelper(camera);
-    scene.add(cameraHelper);
+    //var cameraHelper = new THREE.CameraHelper(camera);
+    //scene.add(cameraHelper);
 
-    cameraP.position.z = 3;
-    cameraP.position.x = 3;
+    cameraP.position.z = -1.25;
+    // cameraP.position.x = 3;
 
     function render() {
         renderer.render(scene, cameraP);
