@@ -90,7 +90,27 @@ window.onload = function () {
     crumple.receiveShadow = true;
 
     crumple.position.z = -2;
-    scene.add(crumple);
+    //scene.add(crumple);
+
+    var geometryC = new THREE.BoxGeometry( 1, 1, 1 );
+    var materialC = new THREE.MeshLambertMaterial({ color: 0x2d3741, ambient: 0x2d3741 });
+    var cube = new THREE.Mesh( geometryC, materialC );
+    cube.position.z = -4;
+    cube.position.y = 0.5;
+    cube.rotation.x = 0.2;
+    cube.rotation.y = 0.4;
+    cube.castShadow = true;
+    scene.add( cube );
+
+    var geometryG = new THREE.BoxGeometry( 5, 0.1, 5 );
+    var materialG = new THREE.MeshLambertMaterial({ color: 0x333333, ambient: 0x333333 });
+    var ground = new THREE.Mesh( geometryG, materialG );
+    ground.position.z = -4;
+    ground.position.y = -0.5;
+    ground.rotation.x = 0.2;
+    ground.receiveShadow = true;
+    //ground.rotation.y = 0.4;
+    scene.add( ground );
 
     var ambient = new THREE.AmbientLight(0x2d3741);
     scene.add(ambient);
@@ -98,9 +118,10 @@ window.onload = function () {
     var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 
     directionalLight.position.set(0, 1, 1);
-    directionalLight.target.position.set(0, 0, 0);
+    //directionalLight.target.position.set(0, 0, 0);
 
     directionalLight.castShadow = true;
+    directionalLight.shadowCameraVisible = true;
     // directionalLight.shadowDarkness = 0.5;
     // directionalLight.shadowCameraVisible = true;
 
@@ -111,28 +132,40 @@ window.onload = function () {
     // directionalLight.shadowCameraNear = 1;
     // directionalLight.shadowCameraFar = 10;
 
+    // renderer.shadowMapEnabled = true;
+    // renderer.shadowMapSoft = true;
+
+    // renderer.shadowCameraNear = 1;
+    // renderer.shadowCameraFar = 10;
+    // renderer.shadowCameraFov = 50;
+
+    // renderer.shadowMapBias = 0.0039;
+    // renderer.shadowMapDarkness = 0.5;
+    // renderer.shadowMapWidth = 1;
+    // renderer.shadowMapHeight = 1;
+
     renderer.shadowMapEnabled = true;
-    renderer.shadowMapSoft = false;
+    renderer.shadowMapSoft = true;
 
     renderer.shadowCameraNear = 1;
-    renderer.shadowCameraFar = 10;
+    renderer.shadowCameraFar = 100;
     renderer.shadowCameraFov = 50;
 
     renderer.shadowMapBias = 0.0039;
     renderer.shadowMapDarkness = 0.5;
-    renderer.shadowMapWidth = 1024;
-    renderer.shadowMapHeight = 1024;
+    renderer.shadowMapWidth = 4;
+    renderer.shadowMapHeight = 4;
 
-    render.shadowCameraVisible = true;
+    //render.shadowCameraVisible = true;
 
     scene.add(directionalLight);
 
-    //scene.add(new THREE.DirectionalLightHelper(directionalLight));
+    scene.add(new THREE.DirectionalLightHelper(directionalLight));
 
     //var cameraHelper = new THREE.CameraHelper(camera);
     //scene.add(cameraHelper);
 
-    cameraP.position.z = -1.25;
+    cameraP.position.z = 20.25;
     // cameraP.position.x = 3;
 
     function render() {
