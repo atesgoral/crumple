@@ -19,6 +19,7 @@
 <body>
 <script src="bower_components/delaunay-fast/delaunay.js"></script>
 <script src="bower_components/threejs/build/three.min.js"></script>
+<script src="CrumpleGeometry.js"></script>
 <script>
 window.onload = function () {
     var sw = window.innerWidth,
@@ -35,69 +36,23 @@ window.onload = function () {
 
     document.body.appendChild(renderer.domElement);
 
-    var geometry = new THREE.Geometry(),
-        density = 15;
-
-    geometry.vertices.push(
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(1, 0, 0),
-        new THREE.Vector3(1, 1, 0),
-        new THREE.Vector3(0, 1, 0)
-    );
-
-    for (var i = 0; i < density; i++) {
-        geometry.vertices.push(
-            new THREE.Vector3(Math.random(), 0, 0),
-            new THREE.Vector3(0, Math.random(), 0),
-            new THREE.Vector3(Math.random(), 1, 0),
-            new THREE.Vector3(1, Math.random(), 0)
-        );
-    }
-
-    for (var i = 0; i < density * density; i++) {
-        geometry.vertices.push(
-            new THREE.Vector3(Math.random(), Math.random(), 0)
-        );
-    }
-
-    geometry.vertices.forEach(function (vertex) {
-        vertex.x -= 0.5;
-        vertex.y -= 0.5;
-        vertex.z = 0.1 * Math.random();
-    });
-
-    Delaunay.triangulate(geometry.vertices.map(function (vertex) {
-        return [ vertex.x, vertex.y ];
-    })).forEach(function (vertexIndex, indexIndex, vertexIndices) {
-        if (indexIndex % 3 === 2) {
-            geometry.faces.push(
-                new THREE.Face3(
-                    vertexIndices[indexIndex],
-                    vertexIndices[indexIndex - 1],
-                    vertexIndices[indexIndex - 2]
-                )
-            );
-        }
-    });
-
-    geometry.computeFaceNormals();
-    // geometry.computeVertexNormals();
-
-    var material = new THREE.MeshLambertMaterial({ color: 0x2d3741, ambient: 0x2d3741 }),
-        crumple = new THREE.Mesh(geometry, material);
+    var color = 0x2d3741,
+        crumpleGeometry = new THREE.CrumpleGeometry(sh, sh, sw / 100, 15),
+        crumpleMaterial = new THREE.MeshLambertMaterial({ color: color, ambient: color }),
+        crumple = new THREE.Mesh(crumpleGeometry, crumpleMaterial);
 
     crumple.castShadow = true;
     crumple.receiveShadow = true;
 
-    crumple.position.z = -2;
+    //crumple.position.z = -2;
     scene.add(crumple);
 
-    var ambient = new THREE.AmbientLight(0x2d3741);
-    scene.add(ambient);
+    var ambientLight = new THREE.AmbientLight(color);
+    scene.add(ambientLight);
 
-    var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 0.75);
 
-    directionalLight.position.set(0, 1, 1);
+    directionalLight.position.set(0, 10000, 5000);
     directionalLight.target.position.set(0, 0, 0);
 
     directionalLight.castShadow = true;
@@ -127,13 +82,14 @@ window.onload = function () {
 
     scene.add(directionalLight);
 
-    //scene.add(new THREE.DirectionalLightHelper(directionalLight));
+    // scene.add(new THREE.DirectionalLightHelper(directionalLight));
 
-    //var cameraHelper = new THREE.CameraHelper(camera);
-    //scene.add(cameraHelper);
+    // var cameraHelper = new THREE.CameraHelper(camera);
+    // scene.add(cameraHelper);
 
-    cameraP.position.z = -1.25;
-    // cameraP.position.x = 3;
+    cameraP.position.z = 400;
+    // cameraP.position.z = 3;
+    // cameraP.position.x = 1;
 
     function render() {
         renderer.render(scene, cameraP);
