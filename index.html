@@ -26,7 +26,7 @@ window.onload = function () {
         sh = window.innerHeight,
         scene = new THREE.Scene(),
         cameraP = new THREE.PerspectiveCamera(75, sw / sh, 0.1, 1000),
-        camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 1, 10),
+        camera = new THREE.OrthographicCamera(sw / -2, sw / 2, sh / 2, sh / -2, 10, 1000),
         renderer = new THREE.WebGLRenderer({ antialias: true });
 
     renderer.shadowMapEnabled = true;
@@ -38,7 +38,7 @@ window.onload = function () {
 
     var color = 0x2d3741,
         crumpleGeometry = new THREE.CrumpleGeometry(sw, sh, sw / 50, 15),
-        crumpleMaterial = new THREE.MeshLambertMaterial({ color: color, ambient: color }),
+        crumpleMaterial = new THREE.MeshPhongMaterial({ color: color, ambient: color }),
         crumple = new THREE.Mesh(crumpleGeometry, crumpleMaterial);
 
     crumple.castShadow = true;
@@ -52,33 +52,34 @@ window.onload = function () {
 
     var directionalLight = new THREE.DirectionalLight(0xffffff, 0.75);
 
-    directionalLight.position.set(0, sh, 100);
+    directionalLight.position.set(0, sh / 2, 1000);
     //directionalLight.target.position.set(0, 0, 0);
 
     directionalLight.castShadow = true;
     directionalLight.shadowDarkness = 0.5;
-    // directionalLight.shadowCameraVisible = true;
+    directionalLight.shadowCameraVisible = true;
 
     directionalLight.shadowCameraRight = sw / 2;
     directionalLight.shadowCameraLeft = sw / -2;
     directionalLight.shadowCameraTop = sh / -2;
     directionalLight.shadowCameraBottom = sh / 2;
     directionalLight.shadowCameraNear = 10;
-    directionalLight.shadowCameraFar = 1000;
+    directionalLight.shadowCameraFar = sh;
 
     renderer.shadowMapEnabled = true;
-    renderer.shadowMapSoft = false;
+    renderer.shadowMapSoft = true;
+    renderer.shadowMapType = THREE.PCFSoftShadowMap;
 
-    renderer.shadowCameraNear = 10;
-    renderer.shadowCameraFar = 1000;
-    renderer.shadowCameraFov = 50;
+    // renderer.shadowCameraNear = 10;
+    // renderer.shadowCameraFar = 1000;
+    // renderer.shadowCameraFov = 50;
 
-    renderer.shadowMapBias = 0.0039;
-    renderer.shadowMapDarkness = 0.5;
-    renderer.shadowMapWidth = sw;
-    renderer.shadowMapHeight = sh;
+    // renderer.shadowMapBias = 0.0039;
+    // renderer.shadowMapDarkness = 0.5;
+    // renderer.shadowMapWidth = sw;
+    // renderer.shadowMapHeight = sh;
 
-    render.shadowCameraVisible = true;
+    // render.shadowCameraVisible = true;
 
     scene.add(directionalLight);
 
@@ -87,7 +88,7 @@ window.onload = function () {
     // var cameraHelper = new THREE.CameraHelper(camera);
     // scene.add(cameraHelper);
 
-    cameraP.position.z = 400;
+    cameraP.position.z = 600;
     // cameraP.position.z = 3;
     // cameraP.position.x = 1;
 

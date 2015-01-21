@@ -45,6 +45,14 @@ THREE.CrumpleGeometry = function (width, height, maxDepth, density) {
         );
     }
 
+    scope.mergeVertices();
+
+    scope.vertices.forEach(function (vertex) {
+        vertex.x = (vertex.x - 0.5) * width;
+        vertex.y = (vertex.y - 0.5) * height;
+        vertex.z = Math.random() * maxDepth;
+    });
+
     Delaunay.triangulate(scope.vertices.map(function (vertex) {
         return [ vertex.x, vertex.y ];
     })).forEach(function (vertexIndex, indexIndex, vertexIndices) {
@@ -57,14 +65,6 @@ THREE.CrumpleGeometry = function (width, height, maxDepth, density) {
                 )
             );
         }
-    });
-
-    scope.mergeVertices();
-
-    scope.vertices.forEach(function (vertex) {
-        vertex.x = (vertex.x - 0.5) * width;
-        vertex.y = (vertex.y - 0.5) * height;
-        vertex.z = Math.random() * maxDepth;
     });
 
     scope.computeFaceNormals();
