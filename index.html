@@ -37,7 +37,7 @@ window.onload = function () {
     document.body.appendChild(renderer.domElement);
 
     var color = 0x2d3741,
-        crumpleGeometry = new THREE.CrumpleGeometry(sh, sh, sw / 100, 15),
+        crumpleGeometry = new THREE.CrumpleGeometry(sw, sh, sw / 50, 15),
         crumpleMaterial = new THREE.MeshLambertMaterial({ color: color, ambient: color }),
         crumple = new THREE.Mesh(crumpleGeometry, crumpleMaterial);
 
@@ -52,31 +52,31 @@ window.onload = function () {
 
     var directionalLight = new THREE.DirectionalLight(0xffffff, 0.75);
 
-    directionalLight.position.set(0, 10000, 5000);
-    directionalLight.target.position.set(0, 0, 0);
+    directionalLight.position.set(0, sh, 100);
+    //directionalLight.target.position.set(0, 0, 0);
 
     directionalLight.castShadow = true;
-    // directionalLight.shadowDarkness = 0.5;
+    directionalLight.shadowDarkness = 0.5;
     // directionalLight.shadowCameraVisible = true;
 
-    // directionalLight.shadowCameraRight = 0.5;
-    // directionalLight.shadowCameraLeft = -0.5;
-    // directionalLight.shadowCameraTop = 0.5;
-    // directionalLight.shadowCameraBottom = -0.5;
-    // directionalLight.shadowCameraNear = 1;
-    // directionalLight.shadowCameraFar = 10;
+    directionalLight.shadowCameraRight = sw / 2;
+    directionalLight.shadowCameraLeft = sw / -2;
+    directionalLight.shadowCameraTop = sh / -2;
+    directionalLight.shadowCameraBottom = sh / 2;
+    directionalLight.shadowCameraNear = 10;
+    directionalLight.shadowCameraFar = 1000;
 
     renderer.shadowMapEnabled = true;
     renderer.shadowMapSoft = false;
 
-    renderer.shadowCameraNear = 1;
-    renderer.shadowCameraFar = 10;
+    renderer.shadowCameraNear = 10;
+    renderer.shadowCameraFar = 1000;
     renderer.shadowCameraFov = 50;
 
     renderer.shadowMapBias = 0.0039;
     renderer.shadowMapDarkness = 0.5;
-    renderer.shadowMapWidth = 1024;
-    renderer.shadowMapHeight = 1024;
+    renderer.shadowMapWidth = sw;
+    renderer.shadowMapHeight = sh;
 
     render.shadowCameraVisible = true;
 

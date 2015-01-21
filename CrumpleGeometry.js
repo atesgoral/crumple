@@ -11,8 +11,10 @@ THREE.CrumpleGeometry = function (width, height, maxDepth, density) {
         density: density
     };
 
-    var scope = this;
+    var scope = this,
+        aspectRatio = width / height;
 
+    // Corners
     scope.vertices.push(
         new THREE.Vector3(0, 0, 0),
         new THREE.Vector3(1, 0, 0),
@@ -20,15 +22,23 @@ THREE.CrumpleGeometry = function (width, height, maxDepth, density) {
         new THREE.Vector3(0, 1, 0)
     );
 
-    for (var i = 0; i < density; i++) {
+    // Horizontal edges
+    for (var i = 0; i < density * aspectRatio; i++) {
         scope.vertices.push(
             new THREE.Vector3(Math.random(), 0, 0),
+            new THREE.Vector3(Math.random(), 1, 0)
+        );
+    }
+
+    // Vertical edges
+    for (var i = 0; i < density / aspectRatio; i++) {
+        scope.vertices.push(
             new THREE.Vector3(0, Math.random(), 0),
-            new THREE.Vector3(Math.random(), 1, 0),
             new THREE.Vector3(1, Math.random(), 0)
         );
     }
 
+    // Inside
     for (var i = 0; i < density * density; i++) {
         scope.vertices.push(
             new THREE.Vector3(Math.random(), Math.random(), 0)
